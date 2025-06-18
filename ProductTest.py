@@ -1,63 +1,60 @@
 import unittest
-from Product import Product  # Ajuste o nome do arquivo se necessário
-
+from Product import Product 
 
 class TestProduct(unittest.TestCase):
 
-    # Teste de sucesso para o método apply_discount
-    def test_apply_discount_success(self):
-        # Cria um produto com nome, estoque e preço
-        product = Product("Arroz", 10, 100)
-        result = product.apply_discount(10)  # Aplica desconto de 10%
+    # O setUp sendo chamado antes dos testes
+    def setUp(self):
+        print("\nIniciando um novo teste...")
+        # Criando diferentes produtos para cada cenário
+        self.product1 = Product(1, "Arroz", 10, 100.0)
+        self.product2 = Product(2, "Feijão", 10, 50.0)
+        self.product3 = Product(3, "Macarrão", 10, 30.0)
+        self.product4 = Product(4, "Café", 10, 20.0)
+        self.product5 = Product(5, "Açúcar", 5, 10.0)
+        self.product6 = Product(6, "Farinha", 10, 15.0)
 
-        # Verifica se o novo preço está correto
-        self.assertEqual(result, 90)
-        self.assertEqual(product.price, 90)
-        self.assertTrue(product.price < 100)
+    # O tearDown sendo chamado depois dos testes
+    def tearDown(self):
+        print("Teste finalizado!")
 
-    # Teste de falha para o método apply_discount
-    def test_apply_discount_failure(self):
-        # Cria um produto com nome, estoque e preço
-        product = Product("Feijão", 5, 50)
+    # Teste de sucesso para increase_stock
+    def test_increase_stock_success(self):
+        self.product1.increase_stock(5)
+        self.assertEqual(self.product1.stock, 15)
+        self.assertTrue(self.product1.stock > 10)
 
-        try:
-            product.apply_discount(150)  # Desconto inválido (>100%)
-            self.assertFalse(True)  # Se não lançar exceção, o teste falha
-        except Exception as e:
-            self.assertEqual(str(e),
-                             "Discount percentage must be between 0 and 100")
+    # Teste de falha para increase_stock (valor negativo ou zero)
+    def test_increase_stock_failure(self):
+        with self.assertRaises(Exception) as context:
+            self.product2.increase_stock(0)
+        self.assertEqual(str(context.exception), "O número deve ser positivo")
 
-    # Teste de sucesso para o método update_name
-    def test_update_name_success(self):
-        # Cria um produto com nome, estoque e preço
-        product = Product("Macarrão", 15, 30)
-        result = product.update_name("Espaguete")
+        with self.assertRaises(Exception) as context:
+            self.product2.increase_stock(-3)
+        self.assertEqual(str(context.exception), "O número deve ser positivo")
 
-        # Verifica se o nome foi alterado corretamente
-        self.assertEqual(result, "Espaguete")
-        self.assertEqual(product.name, "Espaguete")
-        self.assertTrue(product.name == "Espaguete")
+    # Teste de sucesso para decrease_stock
+    def test_decrease_stock_success(self):
+        self.product3.decrease_stock(4)
+        self.assertEqual(self.product3.stock, 6)
+        self.assertTrue(self.product3.stock < 10)
 
-    # Teste de falha para o método update_name
-    def test_update_name_failure(self):
-        # Cria um produto com nome, estoque e preço
-        product = Product("Café", 8, 20)
+    # Teste de falha para decrease_stock (valor negativo ou estoque insuficiente)
+    def test_decrease_stock_failure_negative_quantity(self):
+        with self.assertRaises(Exception) as context:
+            self.product4.decrease_stock(0)
+        self.assertEqual(str(context.exception), "O número deve ser positivo")
 
-        try:
-            product.update_name("")  # Nome inválido (string vazia)
-            self.assertFalse(True)  # Se não lançar exceção, o teste falha
-        except Exception as e:
-            self.assertEqual(str(e), "Product name must be a non-empty string")
+    def test_decrease_stock_failure_insufficient_stock(self):
+        with self.assertRaises(Exception) as context:
+            self.product5.decrease_stock(10)
+        self.assertEqual(str(context.exception), "O estoque deve ser positivo")
 
-    # Teste usando assertFalse para verificar que o preço não aumentou
-    def test_apply_discount_assert_false(self):
-        # Cria um produto com nome, estoque e preço
-        product = Product("Açúcar", 20, 200)
-        product.apply_discount(10)  # Preço esperado: 180
-
-        # Verifica que o preço final não é maior ou igual ao original
-        self.assertFalse(product.price >= 200)
-
+    # Teste extra usando assertFalse
+    def test_decrease_stock_assert_false(self):
+        self.product6.decrease_stock(3)
+        self.assertFalse(self.product6.stock == 10)
 
 if __name__ == '__main__':
     unittest.main()
