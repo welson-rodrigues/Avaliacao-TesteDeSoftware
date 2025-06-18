@@ -1,60 +1,36 @@
-        import unittest
-        from Product import Product
+import unittest
+from Product import Product
 
-        class TestProduct(unittest.TestCase):
-            def setUp(self):
-                self.product = Product(1, "PlayStation 5", 10, 4000)
-
-            def tearDown(self):
-                print(f"\nTest {self._testMethodName} finished. \nTear down executed")
-
-            def test_increase_stock(self):
-                #testando valor válido para função
-                initial_stock = self.product.stock
-                self.product.increase_stock(5)
-                self.assertEqual(self.product.stock, initial_stock + 5)
-
-                #testando valor invalido para função
-                with self.assertRaises(Exception) as context:
-                    self.product.increase_stock(-1)
-
-            def test_decrease_stock(self):
-                #testando valor válido para função
-                initial_stock = self.product.stock
-                self.product.decrease_stock(5)
-                self.assertEqual(self.product.stock, initial_stock - 5)
-
-                #testando valor inválido para função com numero maior que o disponível
-                with self.assertRaises(Exception):
-                    self.product.decrease_stock(20)
-
-                #testando valor inválido para função com numero negativo
-                with self.assertRaises(Exception):
-                    self.product.decrease_stock(-1)
-
-            def test_check_negative_stock(self):
-                #testando valor válido para função
-                with self.assertRaises(Exception):
-                    self.product.check_negative_stock(-1)
-
-                #testando se ele não mostra exceção quando o valor é positivo
-                try:
-                    self.product.check_negative_stock(5)
-                except Exception as e:
-                    self.fail(f"check_negative_stock raised unexpected Exception: {e}")
-
-            def test_check_positive_number(self):
-                #testando se ele não mostra exceção quando o valor é positivo
-                try:
-                    self.product.check_positive_number(5)
-                except Exception as e:
-                    self.fail(f"check_positive_number raised unexpected Exception: {e}")
-
-                #testando valor inválido para função
-                with self.assertRaises(Exception):
-                    self.product.check_positive_number(-1)
+# Testes para apply_discount
+def test_apply_discount_success():
+    product = Product("Arroz", 100)
+    new_price = product.apply_discount(10)
+    assert new_price == 90
+    assert product.price == 90
 
 
+def test_apply_discount_failure():
+    product = Product("Feijão", 50)
+    with pytest.raises(ValueError) as excinfo:
+        product.apply_discount(150)  # Desconto inválido
+    assert str(
+        excinfo.value) == "Discount percentage must be between 0 and 100"
 
-        if __name__ == '__main__':
-            unittest.main()
+
+# Testes para update_name
+def test_update_name_success():
+    product = Product("Macarrão", 30)
+    new_name = product.update_name("Espaguete")
+    assert new_name == "Espaguete"
+    assert product.name == "Espaguete"
+
+
+def test_update_name_failure():
+    product = Product("Café", 20)
+    with pytest.raises(ValueError) as excinfo:
+        product.update_name("")  # Nome inválido
+    assert str(excinfo.value) == "Product name must be a non-empty string"
+
+
+if __name__ == '__main__':
+    unittest.main()
