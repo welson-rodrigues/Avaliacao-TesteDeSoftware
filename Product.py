@@ -1,6 +1,3 @@
-
-
-
 class Product:
     id : int
     name : str
@@ -25,9 +22,11 @@ class Product:
 
     def check_negative_stock(self, value):
         if value < 0:
-            raise Exception('Stock must be positive')
+            raise Exception('O estoque deve ser positivo')
 
     def check_positive_number(self, value):
         if value <= 0:
-            raise Exception('Number must be positive')
-        
+            raise Exception('O número deve ser positivo')
+
+
+# test_nomedometodoasertestado
